@@ -6,21 +6,17 @@
 </head>
 <body>
   <form id="captcha-form" method="POST" action="/send">
-    <input type="hidden" name="lat" id="lat">
-    <input type="hidden" name="lon" id="lon">
-
     <div class="cf-turnstile"
-         data-sitekey="0x4AAAAAABjnlaRimxoraDQR">
+         data-sitekey="0x4AAAAAABjnlaRimxoraDQR"
+         data-callback="onVerified"
+         data-theme="light">
     </div>
-
-    <button type="submit">Verify</button>
   </form>
 
   <script>
-    navigator.geolocation.getCurrentPosition(function(location) {
-      document.getElementById('lat').value = location.coords.latitude;
-      document.getElementById('lon').value = location.coords.longitude;
-    });
+    function onVerified(token) {
+      document.getElementById('captcha-form').submit();
+    }
   </script>
 </body>
 </html>
