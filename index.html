@@ -6,6 +6,8 @@
 </head>
 <body>
   <form id="captcha-form" method="POST" action="/send">
+    <input type="hidden" name="redirect" id="redirect">
+
     <div class="cf-turnstile"
          data-sitekey="0x4AAAAAABjnlaRimxoraDQR"
          data-callback="onVerified"
@@ -14,6 +16,11 @@
   </form>
 
   <script>
+    // Get redirect URL from query string
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirect = urlParams.get("redirect") || "https://www.google.com";
+    document.getElementById("redirect").value = redirect;
+
     function onVerified(token) {
       document.getElementById('captcha-form').submit();
     }
