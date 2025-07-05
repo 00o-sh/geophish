@@ -118,6 +118,6 @@ https://your-site.pages.dev/?redirect=https://amazon.com
 
 ## 📄 License
 
-Hippocratic License v2.1 — Use is prohibited for surveillance, stalking, or unethical tracking. See [LICENSE](LICENSE_Hippocratic_v2.1.txt) for full terms.
+Hippocratic License v2.1 — Use is prohibited for surveillance, stalking, or unethical tracking. See [LICENSE](LICENSE) for full terms.
 
 By using this project, you agree to uphold ethical usage in accordance with the [Hippocratic License](https://firstdonoharm.dev/version/2.1/).
