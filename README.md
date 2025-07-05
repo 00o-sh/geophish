@@ -80,7 +80,7 @@ https://your-site.pages.dev/?redirect=https://amazon.com
 ## 📁 Project Structure
 
 ```
-/public
+/
   └── index.html         # CAPTCHA form (auto-submits)
 /functions
   ├── send.js            # Verifies CAPTCHA → prompts for geolocation
