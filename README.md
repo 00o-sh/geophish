@@ -102,7 +102,8 @@ https://your-site.pages.dev/?redirect=https://amazon.com
 
 ## 🛡️ Security & Ethics
 
-- **No location is collected** without explicit user browser permission
+- ⚠️ If location is already allowed in the browser, it is captured automatically and immediately — no further prompts
+- 📍 This demonstrates how quickly and quietly location can be harvested without user awareness
 - **All secrets** are stored securely as Cloudflare Pages environment variables
 - The goal is to **educate**, not exploit
 
