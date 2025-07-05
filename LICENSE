@@ -1,16 +1,37 @@
-Hippocratic License Version 2.1
+Hippocratic License Version 3.0 (Full Variant)
+https://firstdonoharm.dev/version/3/0/full.html
 
 Copyright © 2024 00o-sh
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, subject to the following conditions:
+Permission is hereby granted to any person or entity obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, and distribute copies of the Software, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+1. Purpose
 
-The Software shall not be used, by any person or entity, for systems or activities that:
-- Violate human rights as defined by the United Nations Universal Declaration of Human Rights
-- Engage in or support surveillance, stalking, or the non-consensual collection of location data
-- Facilitate harm, discrimination, or exploitation of individuals or groups
+This license establishes conditions for using, copying, modifying, and distributing the Software, with the aim of ensuring that it is used for socially beneficial purposes and not for systems or activities that cause harm.
 
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+2. Prohibited Uses
 
-For more information, see https://firstdonoharm.dev
+The Software may not be used in systems, activities, or for purposes that:
+
+a. Violate human rights, as defined by the United Nations Universal Declaration of Human Rights;
+b. Contribute to or facilitate surveillance, stalking, harassment, or other violations of individual privacy or freedom;
+c. Enable any weaponry or military applications intended for harm;
+d. Support the operations of authoritarian regimes or organizations responsible for oppression or injustice;
+e. Facilitate environmental destruction in violation of local or international law.
+
+3. Conditions of Use
+
+All copies or substantial portions of the Software must include:
+
+a. The above copyright notice and this license;
+b. A clear and prominent notice describing the ethical restrictions of this license.
+
+4. Attribution
+
+Users of the Software must give appropriate credit, provide a link to the license, and indicate if changes were made. This must be done in any reasonable manner but not in any way that suggests the licensor endorses the user or their use.
+
+5. Disclaimer
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+See https://firstdonoharm.dev for full license guidance.
