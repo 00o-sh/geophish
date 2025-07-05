@@ -1,3 +1,6 @@
+[![Hippocratic License HL3-FULL](https://img.shields.io/static/v1?label=Hippocratic%20License&message=HL3-FULL&labelColor=5e2751&color=bc8c3d)](https://firstdonoharm.dev/version/3/0/full.html)
+
+
 # GeoPhish (Cloudflare Pages Edition)
 
 > ⚠️ **Proof-of-Concept: How Easily Your Location Can Be Captured Online**
@@ -80,7 +83,7 @@ https://your-site.pages.dev/?redirect=https://amazon.com
 ## 📁 Project Structure
 
 ```
-/
+/public
   └── index.html         # CAPTCHA form (auto-submits)
 /functions
   ├── send.js            # Verifies CAPTCHA → prompts for geolocation
@@ -118,6 +121,6 @@ https://your-site.pages.dev/?redirect=https://amazon.com
 
 ## 📄 License
 
-Hippocratic License v2.1 — Use is prohibited for surveillance, stalking, or unethical tracking. See [LICENSE](LICENSE) for full terms.
+Hippocratic License v3.0 (Full Variant) — Use is prohibited for surveillance, stalking, or unethical tracking. See [LICENSE](LICENSE) for full terms.
 
-By using this project, you agree to uphold ethical usage in accordance with the [Hippocratic License](https://firstdonoharm.dev/version/2.1/).
+By using this project, you agree to uphold ethical usage in accordance with the [Hippocratic License](https://firstdonoharm.dev/version/3/0/full.html).
