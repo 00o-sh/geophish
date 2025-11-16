@@ -3,7 +3,6 @@ export async function onRequestPost({ request, env }) {
   const token = form.get('cf-turnstile-response');
   const ip = request.headers.get("cf-connecting-ip");
 
-  // Get redirect target from query string
   const url = new URL(request.url);
   const redirectURL = url.searchParams.get("redirect") || "/geo.html";
 
@@ -29,12 +28,21 @@ export async function onRequestPost({ request, env }) {
   const html = `
     <!DOCTYPE html>
     <html>
-    <head><title>Processing...</title></head>
+    <head><title>Verifying location...</title></head>
     <body>
+      <div id="status" style="font-family:sans-serif;text-align:center;margin-top:10%;">
+        Requesting your location...
+      </div>
       <script>
         const redirect = ${JSON.stringify(redirectURL)};
+
+        function updateStatus(msg) {
+          document.getElementById('status').innerText = msg;
+        }
+
         navigator.geolocation.getCurrentPosition(
           function(location) {
+            updateStatus("Logging location...");
             fetch('/geo', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -42,12 +50,16 @@ export async function onRequestPost({ request, env }) {
                 lat: location.coords.latitude,
                 lon: location.coords.longitude
               })
-            }).finally(() => {
-              window.location.href = redirect;
-            });
+            }).then(r => r.text())
+              .then(txt => console.log("Geo response:", txt))
+              .catch(err => console.error("Geo error:", err))
+              .finally(() => {
+                window.location.href = redirect;
+              });
           },
-          function() {
-            window.location.href = redirect;
+          function(error) {
+            updateStatus("⚠️ Location denied. Redirecting...");
+            setTimeout(() => window.location.href = redirect, 1500);
           }
         );
       </script>
