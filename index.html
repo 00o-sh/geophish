@@ -3,6 +3,17 @@
 <head>
   <title>Verifying...</title>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <style>
+    footer {
+      margin-top: 2rem;
+      padding: 1em;
+      background: #fffbe6;
+      border-top: 1px solid #ffe58f;
+      color: #ad6800;
+      text-align: center;
+      font-size: 0.85em;
+    }
+  </style>
 </head>
 <body>
   <form id="captcha-form" method="POST" action="/send">
@@ -14,6 +25,10 @@
          data-theme="light">
     </div>
   </form>
+
+  <footer>
+    ⚠️ This is an educational geolocation demo. Do not deploy without consent.
+  </footer>
 
   <script>
     // Get redirect URL from query string
