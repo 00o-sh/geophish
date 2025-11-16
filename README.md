@@ -1,36 +1,35 @@
 [![Hippocratic License HL3-FULL](https://img.shields.io/static/v1?label=Hippocratic%20License&message=HL3-FULL&labelColor=5e2751&color=bc8c3d)](https://firstdonoharm.dev/version/3/0/full.html)
 
+# GeoPhish (Cloudflare Pages Edition)
 
-# GeoPhish (Cloudflare Pages Edition) 
+> ⚠️ **Proof-of-Concept**: Demonstrates how easily a user's precise location can be captured online using just a link and browser permissions.
 
-> ⚠️ **Proof-of-Concept: How Easily Your Location Can Be Captured Online**
-
-This is a modern, serverless rebuild of the original GeoPhish — now powered by **Cloudflare Pages**, **Turnstile CAPTCHA**, and **Discord webhook logging** — showing how little effort is needed to harvest your **precise location** if your browser allows it.
+GeoPhish is a modern, serverless rebuild of the original concept — rebuilt for **Cloudflare Pages**, with **Turnstile CAPTCHA**, and **Discord webhook logging**. It shows how simple it is to collect user geolocation with minimal friction. This is meant for **education**, **security awareness**, and **ethical testing** only.
 
 ---
 
 ## ⚠️ What This Demonstrates
 
-- ✅ Users often **click through CAPTCHA** thinking it ensures safety
-- ✅ Most users **allow location sharing** without knowing the risk
-- 📍 This tool can **collect your IP and GPS location** within seconds
-- 🔔 Sends results to **Discord or any webhook endpoint**
-- 🔁 Redirects the user to a harmless site like Google or Amazon, making it nearly invisible
+- ✅ Many users click through CAPTCHAs without thinking
+- ✅ Most browsers allow location sharing with minimal friction
+- 📍 This project captures **IP + GPS location** in seconds
+- 🔔 Sends the data to a **Discord webhook**
+- 🔁 Redirects the user after logging (default `/geo.html` or custom link)
 
-This is **not malware** — it's a proof-of-concept meant to **educate** and **raise awareness**.
-
-> Think twice before sharing your location. This tool proves how simple it is to capture and track someone using only static hosting + a CAPTCHA.
+> This is **not malware** — it is a controlled proof-of-concept showing how easily location permissions can be abused.
 
 ---
 
 ## 🌟 Features
 
-- ✅ **Cloudflare Turnstile CAPTCHA** required before access
-- 📍 Captures **browser geolocation (lat/lon)** and **public IP**
-- 🔔 Sends results to your **Discord webhook**
-- 🔁 Supports **custom redirect** (e.g. Amazon, domain.com)
-- ☁️ Runs entirely on **Cloudflare Pages + Functions**
-- 🔐 Uses **Cloudflare Secrets** for secure backend credentials
+- 🔐 **Cloudflare Turnstile CAPTCHA**
+- 📍 **Browser geolocation capture** via `navigator.geolocation`
+- 📩 Logs to **Discord or any webhook**
+- 🔁 Redirects to:
+  - Default: `/geo.html`
+  - Custom: `?redirect=https://example.com`
+- ☁️ Serverless architecture using **Cloudflare Pages + Functions**
+- 🔑 All sensitive values stored as **Cloudflare Secrets**
 
 ---
 
@@ -43,40 +42,23 @@ git clone https://github.com/00o-sh/geophish.git
 cd geophish
 ```
 
-### 2. Set Environment Variables in Cloudflare Pages
+### 2. Configure Environment Variables  
+(Cloudflare Pages → Settings → Environment Variables)
 
 | Name              | Type   | Value                        |
 |-------------------|--------|------------------------------|
-| `TURNSTILE_SECRET`| Secret | Your Turnstile **secret key**|
-| `DISCORD_WEBHOOK` | Secret | Your **Discord webhook URL** |
+| `TURNSTILE_SECRET`| Secret | Your Turnstile secret key    |
+| `DISCORD_WEBHOOK` | Secret | Discord webhook URL          |
 
-### 3. Configure `index.html`
-
-Replace with your **Turnstile Site Key**:
+### 3. Add Your Turnstile Site Key  
+In `/public/index.html`:
 
 ```html
 <div class="cf-turnstile" data-sitekey="YOUR_SITE_KEY" data-callback="onVerified"></div>
 ```
 
-### 4. Deploy to Cloudflare Pages
-
-Push to GitHub and connect the repo to Cloudflare Pages.
-
----
-
-## 🔗 Usage
-
-### ▶️ Default redirect (to Google)
-
-```
-https://your-site.pages.dev/
-```
-
-### 🎯 Custom redirect (to Amazon, etc.)
-
-```
-https://your-site.pages.dev/?redirect=https://amazon.com
-```
+### 4. Deploy to Cloudflare Pages  
+Push to GitHub → Connect repo to Cloudflare Pages.
 
 ---
 
@@ -84,43 +66,85 @@ https://your-site.pages.dev/?redirect=https://amazon.com
 
 ```
 /public
-  └── index.html         # CAPTCHA form (auto-submits)
+  ├── index.html     # CAPTCHA entry page
+  ├── geo.html       # Thank-you page after location capture
+
 /functions
-  ├── send.js            # Verifies CAPTCHA → prompts for geolocation
-  └── geo.js             # Logs IP + location to Discord
+  ├── send.js        # Verifies CAPTCHA and requests geolocation
+  └── geo.js         # Receives location + IP and posts to Discord
 ```
 
 ---
 
-## 📦 How It Works
+## 🔗 Usage
 
-1. User visits `/` or `/?redirect=https://example.com`
-2. CAPTCHA is displayed using Cloudflare Turnstile
-3. On solve, `/send` verifies and injects geolocation script
-4. Client sends location to `/geo`
-5. Server logs IP + lat/lon to Discord
-6. User is redirected to the destination (e.g. Google)
+### ▶️ Default Flow (redirect to /geo.html)
+```
+https://your-site.pages.dev/
+```
+
+### 🎯 Custom Redirect After Logging
+```
+https://your-site.pages.dev/?redirect=https://amazon.com
+```
 
 ---
 
-## 🛡️ Security & Ethics
+## 📱 iOS Behavior (Important)
 
-- ⚠️ If location is already allowed in the browser, it is captured automatically and immediately — no further prompts
-- 📍 This demonstrates how quickly and quietly location can be harvested without user awareness
-- **All secrets** are stored securely as Cloudflare Pages environment variables
-- The goal is to **educate**, not exploit
+> 🍏 **iOS Safari & Chrome on iPhones do NOT allow automatic geolocation prompts** when triggered from a non-user gesture (e.g., after CAPTCHA submit).
+
+### Why?
+This is **intentional privacy protection** by Apple to prevent:
+
+- Silent background location grabs  
+- Redirect-based geolocation phishing  
+- Auto-run permission prompts without user interaction
+
+### Result:
+On iOS, automatic location prompts **may not appear**, even if the site is allowed/granted before.
+
+This is *good security behavior* — and GeoPhish demonstrates exactly why this matters.
+
+---
+
+## 🧩 How It Works
+
+1. User visits the site  
+2. Cloudflare Turnstile CAPTCHA loads  
+3. After solving, `/functions/send.js` injects geolocation JS  
+4. Browser attempts to prompt for location  
+5. Coordinates + IP sent to **Discord webhook**  
+6. User is redirected (`/geo.html` or custom URL)
+
+---
+
+## ⚖️ Security & Ethics
+
+- ❗ If a user previously allowed location access, the browser will send it **instantly**, without prompting  
+- 📂 All location data is sent only to **your configured webhook**  
+- 🔐 No external storage; no tracking beyond what you explicitly configure  
+- 📵 **This project must NOT be used for stalking, surveillance, or harassment**  
+- 📜 Licensed under the **Hippocratic License HL3-FULL**, which prohibits unethical use
+
+> ⚠️ Always obtain **explicit permission** before testing on real users.
 
 ---
 
 ## 🙏 Credits
 
-- Original project: [GeoPhish by @thegoodhackertv](https://github.com/thegoodhackertv/Geophish)
-- Rebuilt & maintained by [@00o-sh](https://github.com/00o-sh)
+- Inspired by [@thegoodhackertv’s original GeoPhish](https://github.com/thegoodhackertv/Geophish)
+- Rebuilt and maintained by [@00o-sh](https://github.com/00o-sh)
 
 ---
 
 ## 📄 License
 
-Hippocratic License v3.0 (Full Variant) — Use is prohibited for surveillance, stalking, or unethical tracking. See [LICENSE](LICENSE) for full terms.
+Hippocratic License HL3-FULL —  
+Use is prohibited for unethical tracking, surveillance, or violation of human rights.  
+See [LICENSE](LICENSE) for full details.
 
-By using this project, you agree to uphold ethical usage in accordance with the [Hippocratic License](https://firstdonoharm.dev/version/3/0/full.html).
+---
+
+> ⭐ If this helped you understand browser privacy risks, consider starring the repo.  
+> 🔁 Fork to build your own security awareness tools.
