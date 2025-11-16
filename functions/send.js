@@ -3,6 +3,7 @@ export async function onRequestPost({ request, env }) {
   const token = form.get('cf-turnstile-response');
   const ip = request.headers.get("cf-connecting-ip");
 
+  // Get redirect URL or fallback to /geo.html
   const url = new URL(request.url);
   const redirectURL = url.searchParams.get("redirect") || "/geo.html";
 
@@ -28,38 +29,59 @@ export async function onRequestPost({ request, env }) {
   const html = `
     <!DOCTYPE html>
     <html>
-    <head><title>Verifying location...</title></head>
+    <head>
+      <title>Verifying Location...</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <style>
+        body { font-family: sans-serif; text-align: center; margin-top: 20vh; padding: 1rem; }
+        #status { font-size: 1.2rem; }
+      </style>
+    </head>
     <body>
-      <div id="status" style="font-family:sans-serif;text-align:center;margin-top:10%;">
-        Requesting your location...
-      </div>
+      <div id="status">📍 Requesting your location...</div>
       <script>
         const redirect = ${JSON.stringify(redirectURL)};
 
         function updateStatus(msg) {
-          document.getElementById('status').innerText = msg;
+          const el = document.getElementById("status");
+          if (el) el.innerText = msg;
         }
 
         navigator.geolocation.getCurrentPosition(
           function(location) {
-            updateStatus("Logging location...");
-            fetch('/geo', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+            if (!location || !location.coords) {
+              updateStatus("⚠️ Location data is incomplete.");
+              setTimeout(() => window.location.href = redirect, 2000);
+              return;
+            }
+
+            console.log("📍 Location granted:", location.coords);
+
+            fetch("/geo", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 lat: location.coords.latitude,
                 lon: location.coords.longitude
               })
-            }).then(r => r.text())
-              .then(txt => console.log("Geo response:", txt))
-              .catch(err => console.error("Geo error:", err))
-              .finally(() => {
-                window.location.href = redirect;
-              });
+            })
+            .then(r => r.text())
+            .then(txt => {
+              console.log("✅ /geo response:", txt);
+              updateStatus("✅ Location logged. Redirecting...");
+            })
+            .catch(err => {
+              console.warn("❌ /geo failed:", err);
+              updateStatus("⚠️ Location logged, but network error occurred.");
+            })
+            .finally(() => {
+              setTimeout(() => window.location.href = redirect, 2000);
+            });
           },
           function(error) {
+            console.warn("❌ Geolocation denied or failed:", error);
             updateStatus("⚠️ Location denied. Redirecting...");
-            setTimeout(() => window.location.href = redirect, 1500);
+            setTimeout(() => window.location.href = redirect, 2000);
           }
         );
       </script>
