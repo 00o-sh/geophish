@@ -3,7 +3,8 @@ export async function onRequestPost({ request, env }) {
 
   const token = form.get('cf-turnstile-response');
   const redirect = form.get("redirect") || "https://www.google.com";
-  const noredirect = form.get("noredirect") === "1";
+  const url = new URL(request.url);
+  const noredirect = url.searchParams.get("noredirect") === "1";
   const ip = request.headers.get("cf-connecting-ip");
 
   if (!token) {
